@@ -29,7 +29,7 @@ SECRET_KEY = config('SECRET_KEY', default='153bf2bba8ba11b12e539377fb567450')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 # SECURITY: Explicitly set ALLOWED_HOSTS
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,https://mangadox.onrender.com', cast=Csv())
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,mangadox.onrender.com', cast=Csv())
 
 
 # Application definition
