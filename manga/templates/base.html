@@ -1,0 +1,157 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="MangaDox — Discover and read fan-translated manga, manhwa, and manhua online for free.">
+  <title>{% block title %}MangaDox{% endblock %}</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="{% static 'mangadox.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="site-header">
+    <div class="wrap header-wrap">
+      <a class="brand" href="{% url 'home' %}">
+        <i class="fas fa-book-open brand-icon"></i> MangaDox
+      </a>
+
+      <nav class="nav" id="main-nav">
+        <a href="{% url 'home' %}"><i class="fas fa-home"></i> Home</a>
+        <a href="{% url 'updates' %}"><i class="fas fa-clock"></i> Updates</a>
+        <a href="{% url 'manga_list' %}"><i class="fas fa-compass"></i> Browse</a>
+        {% if current_user %}
+        <a href="{% url 'bookmarks' %}"><i class="fas fa-bookmark"></i> Bookmarks</a>
+        {% endif %}
+        {% if is_admin %}
+        <a href="{% url 'admin_dashboard' %}" class="admin-link"><i class="fas fa-tachometer-alt"></i> Panel</a>
+        {% endif %}
+      </nav>
+
+      <!-- Quick search -->
+      <div class="search-box" id="search-box">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="quick-search" placeholder="Search manga..." autocomplete="off">
+        <div class="search-results" id="search-results"></div>
+      </div>
+
+      <div class="header-right">
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+          <i class="fas fa-moon"></i>
+        </button>
+
+        {% if request.session.username %}
+          <div class="user-menu">
+            <button class="user-btn" id="user-menu-btn">
+              <i class="fas fa-user-circle"></i>
+              <span>{{ request.session.username }}</span>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="user-dropdown" id="user-dropdown">
+              <a href="{% url 'bookmarks' %}"><i class="fas fa-bookmark"></i> Bookmarks</a>
+              {% if is_admin %}
+              <a href="{% url 'admin_dashboard' %}"><i class="fas fa-tachometer-alt"></i> Admin Panel</a>
+              {% endif %}
+              <hr>
+              <form method="POST" action="{% url 'logout_page' %}">
+                {% csrf_token %}
+                <button type="submit" class="dropdown-logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+              </form>
+            </div>
+          </div>
+        {% else %}
+          <a class="btn btn-outline" href="{% url 'login_page' %}"><i class="fas fa-sign-in-alt"></i> Sign In</a>
+          <a class="btn btn-primary" href="{% url 'register_page' %}">Sign Up</a>
+        {% endif %}
+
+        <button class="mobile-toggle" id="mobile-toggle" aria-label="Menu">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== MESSAGES ===== -->
+  {% if messages %}
+  <div class="site-messages" id="site-messages">
+    {% for message in messages %}
+    <div class="msg msg-{{ message.tags }}">
+      <span class="msg-icon">
+        {% if 'success' in message.tags %}<i class="fas fa-check-circle"></i>
+        {% elif 'error' in message.tags %}<i class="fas fa-exclamation-triangle"></i>
+        {% elif 'warning' in message.tags %}<i class="fas fa-exclamation-circle"></i>
+        {% else %}<i class="fas fa-info-circle"></i>{% endif %}
+      </span>
+      <span class="msg-text">{{ message }}</span>
+      <button class="msg-dismiss" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- ===== MAIN ===== -->
+  <main class="site-main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="{% url 'home' %}" class="brand"><i class="fas fa-book-open brand-icon"></i> MangaDox</a>
+          <p class="footer-desc">A community-driven platform for manga readers. All content is fan-translated and credited to its original creators.</p>
+        </div>
+        <div class="footer-links">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'updates' %}">Latest Updates</a></li>
+            <li><a href="{% url 'manga_list' %}">Browse</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Account</h4>
+          <ul>
+            {% if request.session.username %}
+            <li><a href="{% url 'bookmarks' %}">Bookmarks</a></li>
+            {% else %}
+            <li><a href="{% url 'login_page' %}">Sign In</a></li>
+            <li><a href="{% url 'register_page' %}">Register</a></li>
+            {% endif %}
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Info</h4>
+          <ul>
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">Contact</a></li>
+            <li><a href="#">DMCA</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 MangaDox. Fan-translated content belongs to respective authors and publishers.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="{% static 'js/theme_toggle.js' %}"></script>
+  <script src="{% static 'js/main.js' %}"></script>
+  {% block extra_scripts %}{% endblock %}
+
+  <script>
+    // Auto-dismiss messages after 5 seconds
+    setTimeout(function(){
+      var msgs = document.getElementById('site-messages');
+      if(msgs){msgs.style.opacity='0';msgs.style.transform='translateY(-20px)';
+        setTimeout(function(){msgs.remove()},400);}
+    }, 5000);
+  </script>
+</body>
+</html>

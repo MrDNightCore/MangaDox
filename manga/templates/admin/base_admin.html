@@ -1,0 +1,61 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}Admin Panel{% endblock %} — MangaDox</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="{% static 'mangadox.css' %}">
+</head>
+<body class="admin-body">
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="admin-sidebar">
+      <div class="admin-brand">
+        <a href="{% url 'home' %}"><i class="fas fa-book-open"></i> MangaDox</a>
+        <span class="admin-badge">Admin</span>
+      </div>
+      <nav class="admin-nav">
+        <a href="{% url 'admin_dashboard' %}" class="{% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        <a href="{% url 'admin_manga_list' %}" class="{% if 'manga' in request.resolver_match.url_name and 'chapter' not in request.resolver_match.url_name %}active{% endif %}"><i class="fas fa-book"></i> Manga</a>
+        <a href="{% url 'admin_genres' %}" class="{% if request.resolver_match.url_name == 'admin_genres' %}active{% endif %}"><i class="fas fa-tags"></i> Genres</a>
+        <a href="{% url 'admin_users' %}" class="{% if 'user' in request.resolver_match.url_name %}active{% endif %}"><i class="fas fa-users"></i> Users</a>
+        <hr>
+        <a href="{% url 'home' %}"><i class="fas fa-globe"></i> View Site</a>
+      </nav>
+    </aside>
+
+    <!-- Main -->
+    <div class="admin-main">
+      <header class="admin-topbar">
+        <button class="mobile-toggle" onclick="document.getElementById('admin-sidebar').classList.toggle('open')">
+          <i class="fas fa-bars"></i>
+        </button>
+        <span class="admin-welcome">Welcome, {{ request.session.username }}</span>
+        <form method="POST" action="{% url 'logout_page' %}" style="display:inline">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-outline"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </form>
+      </header>
+
+      {% if messages %}
+      <div class="admin-messages">
+        {% for message in messages %}
+        <div class="msg msg-{{ message.tags }}">
+          <span class="msg-text">{{ message }}</span>
+          <button class="msg-dismiss" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="admin-content">
+        {% block admin_content %}{% endblock %}
+      </div>
+    </div>
+  </div>
+</body>
+</html>

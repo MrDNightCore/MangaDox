@@ -1,0 +1,37 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Chapters — {{ manga.title }}{% endblock %}
+{% block admin_content %}
+<div class="admin-header-row">
+  <div>
+    <h1 class="admin-page-title">Chapters</h1>
+    <p class="text-muted">{{ manga.title }}</p>
+  </div>
+  <div>
+    <a href="{% url 'admin_chapter_create' manga.id %}" class="btn btn-primary"><i class="fas fa-plus"></i> Add Chapter</a>
+    <a href="{% url 'admin_manga_list' %}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back</a>
+  </div>
+</div>
+
+<table class="admin-table">
+  <thead><tr><th>Number</th><th>Title</th><th>Images</th><th>Added</th><th>Actions</th></tr></thead>
+  <tbody>
+    {% for ch in chapters %}
+    <tr>
+      <td>Ch. {{ ch.number }}</td>
+      <td>{{ ch.title|default:"—" }}</td>
+      <td>{{ ch.image_count }}</td>
+      <td>{{ ch.created_at|timesince }} ago</td>
+      <td class="action-cell">
+        <a href="{% url 'admin_chapter_edit' manga.id ch.id %}" class="btn btn-sm btn-outline"><i class="fas fa-edit"></i></a>
+        <form method="POST" action="{% url 'admin_chapter_delete' manga.id ch.id %}" style="display:inline" onsubmit="return confirm('Delete chapter {{ ch.number }}?')">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+        </form>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5" class="text-muted" style="text-align:center">No chapters yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

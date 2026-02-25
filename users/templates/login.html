@@ -1,0 +1,97 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Login to MangaDox">
+  <meta name="theme-color" content="#1a1a1a">
+  <title>Login - MangaDox</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+  <style>
+    .site-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.7), transparent);
+      padding: 20px 0;
+      z-index: 1000;
+    }
+    .site-header .wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand {
+      font-size: 24px;
+      font-weight: 700;
+      color: #ff5a5f;
+      text-decoration: none;
+    }
+    .register-wrapper {
+      padding-top: 0;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="/">MangaDox</a>
+    </div>
+  </header>
+  <video autoplay muted loop class="video-background">
+    <source src="{% static 'itachi-naruto.3840x2160.mp4' %}" type="video/mp4">
+  </video>
+  <div class="register-wrapper">
+    <div class="register-card">
+      <h1>LOGIN</h1>
+        {% if messages %}
+        <ul class="messages" role="status" aria-live="polite">
+          {% for message in messages %}
+            <li class="{{ message.tags }}">
+              <span class="msg-icon" aria-hidden="true">
+                {% if 'success' in message.tags %}
+                  <i class="fas fa-check-circle"></i>
+                {% elif 'error' in message.tags %}
+                  <i class="fas fa-exclamation-triangle"></i>
+                {% elif 'warning' in message.tags %}
+                  <i class="fas fa-exclamation-circle"></i>
+                {% else %}
+                  <i class="fas fa-info-circle"></i>
+                {% endif %}
+              </span>
+              <span class="msg-text">{{ message }}</span>
+              <button class="msg-close" aria-label="Close message">&times;</button>
+            </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      <form method="POST" novalidate>
+        {% csrf_token %}
+        <div class="input-group">
+          <input type="text" name="username" placeholder="Username" required autocomplete="username">
+          <span class="focus-input100"></span>
+          <i class="fas fa-user"></i>
+        </div>
+        <div class="input-group">
+          <input type="password" name="password" placeholder="Password" required autocomplete="current-password">
+          <span class="focus-input100"></span>
+          <i class="fas fa-lock"></i>
+        </div>
+        <button type="submit" class="register-btn">LOGIN</button>
+      </form>
+
+      <div class="auth-links">
+        <span>Not a member ? <a href="{% url 'register_page' %}">Sign up now</a></span>
+        <span>Forgot password ? <a href="#">Reset Here</a></span>
+      </div>
+    </div>
+    </div>
+    <script src="{% static 'users/js/messages.js' %}"></script>
+</body>
+</html>

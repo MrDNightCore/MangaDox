@@ -1,0 +1,35 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Manage Genres{% endblock %}
+{% block admin_content %}
+<h1 class="admin-page-title">Genres</h1>
+
+<form method="POST" class="admin-search" style="margin-bottom:24px;">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="add">
+  <input type="text" name="name" placeholder="New genre name..." class="form-input" required>
+  <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Add</button>
+</form>
+
+<table class="admin-table">
+  <thead><tr><th>Name</th><th>Slug</th><th>Manga Count</th><th>Actions</th></tr></thead>
+  <tbody>
+    {% for g in genres %}
+    <tr>
+      <td>{{ g.name }}</td>
+      <td class="text-muted">{{ g.slug }}</td>
+      <td>{{ g.manga_count }}</td>
+      <td>
+        <form method="POST" style="display:inline" onsubmit="return confirm('Delete genre &quot;{{ g.name }}&quot;?')">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="delete">
+          <input type="hidden" name="genre_id" value="{{ g.id }}">
+          <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+        </form>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="4" class="text-muted" style="text-align:center">No genres yet. Add one above.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

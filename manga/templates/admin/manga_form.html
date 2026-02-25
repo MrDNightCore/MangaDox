@@ -1,0 +1,73 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}{% if is_edit %}Edit{% else %}Add{% endif %} Manga{% endblock %}
+{% block admin_content %}
+<h1 class="admin-page-title">{% if is_edit %}Edit "{{ manga.title|truncatechars:40 }}"{% else %}Add New Manga{% endif %}</h1>
+
+<form method="POST" enctype="multipart/form-data" class="admin-form">
+  {% csrf_token %}
+
+  {% if form.errors %}
+  <div class="msg msg-error">
+    <span class="msg-text">Please fix the errors below.</span>
+  </div>
+  {% endif %}
+
+  <div class="form-grid">
+    <div class="form-group full">
+      <label for="id_title">Title *</label>
+      {{ form.title }}
+      {% if form.title.errors %}<span class="field-error">{{ form.title.errors.0 }}</span>{% endif %}
+    </div>
+    <div class="form-group full">
+      <label for="id_alt_titles">Alternative Titles</label>
+      {{ form.alt_titles }}
+    </div>
+    <div class="form-group full">
+      <label for="id_description">Description</label>
+      {{ form.description }}
+    </div>
+    <div class="form-group">
+      <label for="id_author">Author</label>
+      {{ form.author }}
+    </div>
+    <div class="form-group">
+      <label for="id_artist">Artist</label>
+      {{ form.artist }}
+    </div>
+    <div class="form-group">
+      <label for="id_status">Status</label>
+      {{ form.status }}
+    </div>
+    <div class="form-group">
+      <label for="id_manga_type">Type</label>
+      {{ form.manga_type }}
+    </div>
+    <div class="form-group">
+      <label for="id_cover">Cover Image (upload)</label>
+      <input type="file" name="cover" accept="image/*" class="form-input">
+      {% if is_edit and manga.cover %}<p class="text-muted">Current: {{ manga.cover.name }}</p>{% endif %}
+    </div>
+    <div class="form-group">
+      <label for="id_cover_url">Cover URL (external)</label>
+      {{ form.cover_url }}
+    </div>
+    <div class="form-group full">
+      <label>Genres</label>
+      <div class="checkbox-grid">
+        {% for g in genres %}
+        <label class="checkbox-label">
+          <input type="checkbox" name="genres" value="{{ g.id }}"
+            {% if is_edit %}{% for sel in form.instance.genres.all %}{% if sel.id == g.id %}checked{% endif %}{% endfor %}{% endif %}>
+          {{ g.name }}
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> {% if is_edit %}Update{% else %}Create{% endif %} Manga</button>
+    <a href="{% url 'admin_manga_list' %}" class="btn btn-outline">Cancel</a>
+  </div>
+</form>
+{% endblock %}

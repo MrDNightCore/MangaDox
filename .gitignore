@@ -1,0 +1,107 @@
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# Database
+db.sqlite3
+db.sqlite3-journal
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+logs/
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+ENV/
+env/
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.project
+.pydevproject
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# Django
+local_settings.py
+/staticfiles/
+/media/
+
+# Testing
+.coverage
+.pytest_cache/
+htmlcov/
+
+# OS
+Thumbs.db
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Backups
+*.backup
+*.bak
+backups/
+
+# Cache
+.cache
+*.cache
+
+# Temporary files
+*.tmp
+tmp/
+temp/
+
+# SSL Certificates (if stored locally)
+*.pem
+*.key
+*.crt
+*.csr
+
+# Sensitive files
+.credentials
+.aws/credentials
+secrets.yml
+config/secrets.yml
+
+# VS Code
+.vscode/settings.json
+.vscode/extensions.json

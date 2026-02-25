@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ manga.title }} — MangaDox{% endblock %}
+{% block extra_head %}
+<style>.detail-hero{background:linear-gradient(180deg,rgba(7,16,23,.92),var(--bg)),url('{{ manga.get_cover_display }}') center/cover no-repeat;}</style>
+{% endblock %}
+{% block content %}
+<!-- Detail Hero -->
+<section class="detail-hero">
+  <div class="wrap detail-hero-inner">
+    <img src="{{ manga.get_cover_display }}" alt="{{ manga.title }}" class="detail-cover">
+    <div class="detail-info">
+      <h1>{{ manga.title }}</h1>
+      {% if manga.alt_titles %}<p class="detail-alt">{{ manga.alt_titles|truncatewords:20 }}</p>{% endif %}
+      <p class="detail-author"><strong>Author:</strong> {{ manga.author }}</p>
+
+      <!-- Rating -->
+      <div class="detail-rating">
+        <div class="stars" id="star-display">
+          {% for i in "12345" %}
+          <i class="{% if manga.rating >= forloop.counter %}fas{% else %}far{% endif %} fa-star"></i>
+          {% endfor %}
+        </div>
+        <span class="rating-val" id="rating-val">{{ manga.rating }}</span>
+        <span class="rating-count">({{ manga.rating_count }})</span>
+      </div>
+
+      <!-- Stats -->
+      <div class="detail-stats">
+        <div class="dstat"><i class="fas fa-book"></i><strong>{{ manga.get_chapter_count }}</strong><span>Chapters</span></div>
+        <div class="dstat"><i class="fas fa-eye"></i><strong>{{ manga.views|floatformat:0 }}</strong><span>Views</span></div>
+        <div class="dstat"><i class="fas fa-bookmark"></i><strong id="bm-count">{{ bookmark_count }}</strong><span>Bookmarked</span></div>
+        <div class="dstat"><span class="status-badge {% if manga.status == 'Ongoing' %}ongoing{% elif manga.status == 'Completed' %}completed{% else %}hiatus{% endif %}">{{ manga.status }}</span></div>
+      </div>
+
+      <!-- Genres -->
+      <div class="detail-genres">
+        {% for g in manga.genres.all %}
+        <a href="{% url 'manga_list' %}?genre={{ g.slug }}" class="genre-pill">{{ g.name }}</a>
+        {% endfor %}
+      </div>
+
+      <!-- Actions -->
+      <div class="detail-actions">
+        {% with first_ch=manga.chapters.last %}
+        {% if first_ch %}
+        <a href="{% url 'chapter_reader' manga.slug first_ch.number %}" class="btn btn-primary btn-lg"><i class="fas fa-play"></i> Read Chapter 1</a>
+        {% endif %}
+        {% endwith %}
+
+        {% if request.session.user_id %}
+        <button class="btn btn-outline btn-lg" id="bookmark-btn" data-manga="{{ manga.id }}"
+                data-bookmarked="{{ is_bookmarked|yesno:'true,false' }}">
+          <i class="{% if is_bookmarked %}fas{% else %}far{% endif %} fa-bookmark"></i>
+          <span>{% if is_bookmarked %}Bookmarked{% else %}Bookmark{% endif %}</span>
+        </button>
+        {% else %}
+        <a href="{% url 'login_page' %}" class="btn btn-outline btn-lg"><i class="far fa-bookmark"></i> Login to Bookmark</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Tabs: About / Chapters -->
+<section class="section">
+  <div class="wrap">
+    <div class="detail-tabs">
+      <button class="tab-btn active" data-tab="about">About</button>
+      <button class="tab-btn" data-tab="chapters">Chapters ({{ manga.get_chapter_count }})</button>
+      <button class="tab-btn" data-tab="comments">Comments</button>
+    </div>
+
+    <!-- About Tab -->
+    <div class="tab-panel active" id="tab-about">
+      <div class="detail-desc">
+        {% if manga.description %}
+        <p>{{ manga.description|linebreaksbr }}</p>
+        {% else %}
+        <p class="text-muted">No description available yet.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Chapters Tab -->
+    <div class="tab-panel" id="tab-chapters">
+      {% if chapters %}
+      <div class="chapter-list">
+        {% for ch in chapters %}
+        <a href="{% url 'chapter_reader' manga.slug ch.number %}" class="chapter-row">
+          <span class="ch-num">Ch. {{ ch.number }}{% if ch.title %} — {{ ch.title }}{% endif %}</span>
+          <span class="ch-time"><i class="far fa-clock"></i> {{ ch.created_at|timesince }} ago</span>
+        </a>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="text-muted" style="text-align:center;padding:40px;">No chapters yet.</p>
+      {% endif %}
+    </div>
+
+    <!-- Comments Tab -->
+    <div class="tab-panel" id="tab-comments">
+      {% if request.session.user_id %}
+      <form class="comment-form" id="comment-form">
+        {% csrf_token %}
+        <input type="hidden" name="manga_id" value="{{ manga.id }}">
+        <textarea name="text" placeholder="Write a comment..." rows="3" maxlength="2000" required></textarea>
+        <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-paper-plane"></i> Post</button>
+      </form>
+      {% else %}
+      <p class="text-muted" style="margin-bottom:16px;"><a href="{% url 'login_page' %}">Sign in</a> to leave a comment.</p>
+      {% endif %}
+
+      <div class="comments-list" id="comments-list">
+        {% for c in comments %}
+        <div class="comment-item">
+          <div class="comment-header">
+            <i class="fas fa-user-circle"></i>
+            <strong>{{ c.user.username }}</strong>
+            <span class="comment-time">{{ c.created_at|timesince }} ago</span>
+          </div>
+          <p class="comment-text">{{ c.text }}</p>
+        </div>
+        {% empty %}
+        <p class="text-muted" id="no-comments">No comments yet. Be the first!</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- User rating -->
+{% if request.session.user_id %}
+<div class="rate-widget" id="rate-widget" data-manga="{{ manga.id }}" data-user-rating="{{ user_rating.score|default:'0' }}">
+  <span class="rate-label">Rate this manga:</span>
+  {% for i in "12345" %}
+  <button class="rate-star" data-score="{{ forloop.counter }}"><i class="{% if user_rating and user_rating.score >= forloop.counter %}fas{% else %}far{% endif %} fa-star"></i></button>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Tabs
+document.querySelectorAll('.tab-btn').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active')});
+    document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active')});
+    btn.classList.add('active');
+    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+  });
+});
+
+// Bookmark
+var bmBtn=document.getElementById('bookmark-btn');
+if(bmBtn){
+  bmBtn.addEventListener('click',function(){
+    fetch('{% url "toggle_bookmark" %}',{method:'POST',headers:{'X-CSRFToken':document.querySelector('[name=csrfmiddlewaretoken]').value,'Content-Type':'application/x-www-form-urlencoded'},body:'manga_id='+bmBtn.dataset.manga})
+    .then(function(r){return r.json()}).then(function(d){
+      if(d.error){alert(d.error);return;}
+      bmBtn.dataset.bookmarked=d.bookmarked;
+      bmBtn.querySelector('i').className=d.bookmarked?'fas fa-bookmark':'far fa-bookmark';
+      bmBtn.querySelector('span').textContent=d.bookmarked?'Bookmarked':'Bookmark';
+      document.getElementById('bm-count').textContent=d.count;
+    });
+  });
+}
+
+// Comment form
+var cf=document.getElementById('comment-form');
+if(cf){
+  cf.addEventListener('submit',function(e){
+    e.preventDefault();
+    var fd=new FormData(cf);
+    fetch('{% url "add_comment" %}',{method:'POST',headers:{'X-CSRFToken':fd.get('csrfmiddlewaretoken')},body:fd})
+    .then(function(r){return r.json()}).then(function(d){
+      if(d.error){alert(d.error);return;}
+      var nc=document.getElementById('no-comments');if(nc)nc.remove();
+      var div=document.createElement('div');div.className='comment-item';
+      div.innerHTML='<div class="comment-header"><i class="fas fa-user-circle"></i><strong>'+d.user+'</strong><span class="comment-time">Just now</span></div><p class="comment-text">'+d.text+'</p>';
+      document.getElementById('comments-list').prepend(div);
+      cf.querySelector('textarea').value='';
+    });
+  });
+}
+
+// Rating
+var rw=document.getElementById('rate-widget');
+if(rw){
+  rw.querySelectorAll('.rate-star').forEach(function(s){
+    s.addEventListener('click',function(){
+      var score=s.dataset.score;
+      fetch('{% url "rate_manga" %}',{method:'POST',headers:{'X-CSRFToken':document.querySelector('[name=csrfmiddlewaretoken]').value,'Content-Type':'application/x-www-form-urlencoded'},body:'manga_id='+rw.dataset.manga+'&score='+score})
+      .then(function(r){return r.json()}).then(function(d){
+        if(d.error){alert(d.error);return;}
+        document.getElementById('rating-val').textContent=d.rating;
+        rw.querySelectorAll('.rate-star').forEach(function(ss,i){
+          ss.querySelector('i').className=(i<score?'fas':'far')+' fa-star';
+        });
+      });
+    });
+  });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,45 @@
+# Django Core
+Django==6.0.2
+python-decouple==3.8
+
+# Security
+django-cors-headers==4.3.1
+django-ratelimit==4.1.0
+bleach==6.1.0
+
+# Password & Hashing
+bcrypt==4.1.1
+argon2-cffi==23.1.0
+
+# CSRF & Security Headers
+django-csp==3.8
+
+# Testing & QA
+pytest==7.4.3
+pytest-django==4.7.0
+factory-boy==3.3.0
+
+# Database
+SQLAlchemy==2.0.23
+
+# Image processing
+Pillow>=10.0.0
+
+# Utilities
+pytz==2023.3
+requests==2.31.0
+
+# Production ready
+gunicorn==21.2.0
+whitenoise==6.6.0
+psycopg2-binary==2.9.9  # For PostgreSQL in production
+
+# Logging & Monitoring
+# python-logging-loki==0.3.2
+
+# Email & Communication
+# django-anymail==10.0
+
+# API (if needed)
+djangorestframework==3.14.0
+django-filter==23.5

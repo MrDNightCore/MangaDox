@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}MangaDox — Discover and Read Manga Online{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<section class="hero">
+  <div class="wrap hero-inner">
+    <div class="hero-text">
+      <h1>Welcome to <span class="accent">MangaDox</span></h1>
+      <p>Discover fan-translated manga, manhwa, and manhua — updated daily. Your next great story is waiting.</p>
+      <div class="ctas">
+        <a class="btn btn-primary btn-lg" href="{% url 'manga_list' %}"><i class="fas fa-compass"></i> Browse Manga</a>
+        <a class="btn btn-outline btn-lg" href="{% url 'updates' %}"><i class="fas fa-clock"></i> Latest Updates</a>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-card">
+        <i class="fas fa-book"></i>
+        <span class="stat-num">{{ popular_manga|length }}+</span>
+        <span class="stat-label">Titles</span>
+      </div>
+      <div class="stat-card">
+        <i class="fas fa-layer-group"></i>
+        <span class="stat-num">{{ latest_updates|length }}+</span>
+        <span class="stat-label">Chapters</span>
+      </div>
+      <div class="stat-card">
+        <i class="fas fa-users"></i>
+        <span class="stat-num">Free</span>
+        <span class="stat-label">Always</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Popular Manga -->
+{% if popular_manga %}
+<section class="section">
+  <div class="wrap">
+    <div class="section-header">
+      <h2><i class="fas fa-fire"></i> Popular Manga</h2>
+      <a href="{% url 'manga_list' %}?sort=popular" class="see-all">View All <i class="fas fa-arrow-right"></i></a>
+    </div>
+    <div class="manga-grid">
+      {% for manga in popular_manga %}
+      <a href="{% url 'manga_detail' manga.slug %}" class="manga-card">
+        <div class="manga-card-cover">
+          <img src="{{ manga.get_cover_display }}" alt="{{ manga.title }}" loading="lazy">
+          {% if manga.rating > 0 %}
+          <span class="card-rating"><i class="fas fa-star"></i> {{ manga.rating }}</span>
+          {% endif %}
+          <span class="card-type">{{ manga.manga_type }}</span>
+        </div>
+        <div class="manga-card-info">
+          <h3 class="manga-card-title">{{ manga.title }}</h3>
+          <span class="manga-card-meta">
+            {% with ch=manga.get_latest_chapter %}
+            {% if ch %}Ch. {{ ch.number }}{% else %}No chapters{% endif %}
+            {% endwith %}
+          </span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- New Manga -->
+{% if new_manga %}
+<section class="section">
+  <div class="wrap">
+    <div class="section-header">
+      <h2><i class="fas fa-sparkles"></i> Recently Added</h2>
+      <a href="{% url 'manga_list' %}?sort=new" class="see-all">View All <i class="fas fa-arrow-right"></i></a>
+    </div>
+    <div class="manga-grid">
+      {% for manga in new_manga %}
+      <a href="{% url 'manga_detail' manga.slug %}" class="manga-card">
+        <div class="manga-card-cover">
+          <img src="{{ manga.get_cover_display }}" alt="{{ manga.title }}" loading="lazy">
+          {% if manga.rating > 0 %}
+          <span class="card-rating"><i class="fas fa-star"></i> {{ manga.rating }}</span>
+          {% endif %}
+          <span class="card-type">{{ manga.manga_type }}</span>
+        </div>
+        <div class="manga-card-info">
+          <h3 class="manga-card-title">{{ manga.title }}</h3>
+          <span class="manga-card-meta">{{ manga.status }}</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- Latest Chapter Updates -->
+{% if latest_updates %}
+<section class="section">
+  <div class="wrap">
+    <div class="section-header">
+      <h2><i class="fas fa-bolt"></i> Latest Updates</h2>
+      <a href="{% url 'updates' %}" class="see-all">View All <i class="fas fa-arrow-right"></i></a>
+    </div>
+    <div class="updates-list">
+      {% for ch in latest_updates %}
+      <a href="{% url 'chapter_reader' ch.manga.slug ch.number %}" class="update-row">
+        <img src="{{ ch.manga.get_cover_display }}" alt="{{ ch.manga.title }}" class="update-thumb" loading="lazy">
+        <div class="update-info">
+          <h4>{{ ch.manga.title }}</h4>
+          <span class="update-chapter">Chapter {{ ch.number }}{% if ch.title %} — {{ ch.title }}{% endif %}</span>
+        </div>
+        <span class="update-time"><i class="far fa-clock"></i> {{ ch.created_at|timesince }} ago</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if not popular_manga and not new_manga %}
+<section class="section">
+  <div class="wrap" style="text-align:center;padding:80px 20px;">
+    <i class="fas fa-book-open" style="font-size:48px;opacity:.3;margin-bottom:16px;display:block;"></i>
+    <h2>No Manga Yet</h2>
+    <p style="color:var(--muted);">Content is coming soon. Check back later!</p>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

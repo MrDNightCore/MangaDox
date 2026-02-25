@@ -1,0 +1,59 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}{% if is_edit %}Edit{% else %}Add{% endif %} Chapter — {{ manga.title }}{% endblock %}
+{% block admin_content %}
+<h1 class="admin-page-title">{% if is_edit %}Edit Chapter {{ chapter.number }}{% else %}Add Chapter{% endif %}</h1>
+<p class="text-muted">{{ manga.title }}</p>
+
+<form method="POST" enctype="multipart/form-data" class="admin-form">
+  {% csrf_token %}
+
+  <div class="form-grid">
+    <div class="form-group">
+      <label>Chapter Number *</label>
+      {{ form.number }}
+      {% if form.number.errors %}<span class="field-error">{{ form.number.errors.0 }}</span>{% endif %}
+    </div>
+    <div class="form-group">
+      <label>Title (optional)</label>
+      {{ form.title }}
+    </div>
+    <div class="form-group full">
+      <label>Upload Page Images</label>
+      <input type="file" name="images" accept="image/*" multiple class="form-input">
+      <p class="text-muted">Select multiple images. They will be ordered by filename.</p>
+    </div>
+  </div>
+
+  {% if is_edit and existing_images %}
+  <div class="form-group full">
+    <label>Existing Pages ({{ existing_images|length }})</label>
+    <div class="image-preview-grid">
+      {% for img in existing_images %}
+      <div class="preview-item" id="img-{{ img.id }}">
+        <img src="{{ img.image.url }}" alt="Page {{ img.order }}">
+        <span class="preview-order">{{ img.order|add:1 }}</span>
+        <button type="button" class="preview-delete" onclick="deleteImage({{ img.id }})"><i class="fas fa-times"></i></button>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> {% if is_edit %}Update{% else %}Add{% endif %} Chapter</button>
+    <a href="{% url 'admin_chapter_list' manga.id %}" class="btn btn-outline">Cancel</a>
+  </div>
+</form>
+
+{% if is_edit %}
+<script>
+function deleteImage(id){
+  if(!confirm('Delete this page image?'))return;
+  fetch('/panel/chapter-image/'+id+'/delete/',{method:'POST',headers:{'X-CSRFToken':'{{ csrf_token }}'}})
+  .then(function(r){return r.json()}).then(function(d){
+    if(d.success)document.getElementById('img-'+id).remove();
+  });
+}
+</script>
+{% endif %}
+{% endblock %}

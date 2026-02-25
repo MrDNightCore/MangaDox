@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Browse Manga — MangaDox{% endblock %}
+{% block content %}
+<section class="section browse-section">
+  <div class="wrap">
+    <h1 class="page-title"><i class="fas fa-compass"></i> Browse Comics</h1>
+    <p class="page-subtitle">Discover your next favorite story</p>
+    <span class="badge badge-info"><i class="fas fa-book"></i> {{ total_count }} Comics</span>
+
+    <!-- Filters -->
+    <form method="GET" class="browse-filters" id="browse-form">
+      <div class="filter-row">
+        <div class="filter-group">
+          <label>Search</label>
+          <div class="search-input-wrap">
+            <input type="text" name="q" value="{{ query }}" placeholder="Search by title, author..." class="form-input">
+            <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-search"></i></button>
+          </div>
+        </div>
+        <div class="filter-group">
+          <label>Status</label>
+          <select name="status" class="form-select" onchange="this.form.submit()">
+            <option value="">Any</option>
+            <option value="Ongoing" {% if current_status == 'Ongoing' %}selected{% endif %}>Ongoing</option>
+            <option value="Completed" {% if current_status == 'Completed' %}selected{% endif %}>Completed</option>
+            <option value="Hiatus" {% if current_status == 'Hiatus' %}selected{% endif %}>Hiatus</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Type</label>
+          <select name="type" class="form-select" onchange="this.form.submit()">
+            <option value="">Any</option>
+            <option value="Manga" {% if current_type == 'Manga' %}selected{% endif %}>Manga</option>
+            <option value="Manhwa" {% if current_type == 'Manhwa' %}selected{% endif %}>Manhwa</option>
+            <option value="Manhua" {% if current_type == 'Manhua' %}selected{% endif %}>Manhua</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Sort By</label>
+          <select name="sort" class="form-select" onchange="this.form.submit()">
+            <option value="latest" {% if current_sort == 'latest' %}selected{% endif %}>Latest Update</option>
+            <option value="new" {% if current_sort == 'new' %}selected{% endif %}>Recently Added</option>
+            <option value="popular" {% if current_sort == 'popular' %}selected{% endif %}>Most Popular</option>
+            <option value="rating" {% if current_sort == 'rating' %}selected{% endif %}>Top Rated</option>
+            <option value="alpha" {% if current_sort == 'alpha' %}selected{% endif %}>Title A–Z</option>
+            <option value="alpha_desc" {% if current_sort == 'alpha_desc' %}selected{% endif %}>Title Z–A</option>
+          </select>
+        </div>
+      </div>
+
+      {% if genres %}
+      <div class="genre-filter">
+        <label>Genres</label>
+        <div class="genre-tags">
+          {% for g in genres %}
+          <label class="genre-tag {% if g.slug in current_genre %}active{% endif %}">
+            <input type="checkbox" name="genre_cb" value="{{ g.slug }}"
+                   {% if g.slug in current_genre %}checked{% endif %}
+                   onchange="updateGenreFilter()"> {{ g.name }}
+          </label>
+          {% endfor %}
+        </div>
+        <input type="hidden" name="genre" id="genre-hidden" value="{{ current_genre }}">
+      </div>
+      {% endif %}
+    </form>
+
+    <!-- Results -->
+    {% if manga_list %}
+    <div class="manga-grid manga-grid-browse">
+      {% for manga in manga_list %}
+      <a href="{% url 'manga_detail' manga.slug %}" class="manga-card">
+        <div class="manga-card-cover">
+          <img src="{{ manga.get_cover_display }}" alt="{{ manga.title }}" loading="lazy">
+          {% if manga.rating > 0 %}
+          <span class="card-rating"><i class="fas fa-star"></i> {{ manga.rating }}</span>
+          {% endif %}
+          <span class="card-type">{{ manga.manga_type }}</span>
+        </div>
+        <div class="manga-card-info">
+          <h3 class="manga-card-title">{{ manga.title }}</h3>
+          <span class="manga-card-meta">{{ manga.status }} · <i class="fas fa-eye"></i> {{ manga.views }}</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if manga_list.has_other_pages %}
+    <nav class="pagination">
+      {% if manga_list.has_previous %}
+      <a href="?page={{ manga_list.previous_page_number }}&q={{ query }}&status={{ current_status }}&type={{ current_type }}&sort={{ current_sort }}&genre={{ current_genre }}" class="page-link"><i class="fas fa-chevron-left"></i> Prev</a>
+      {% endif %}
+      {% for num in manga_list.paginator.page_range %}
+        {% if manga_list.number == num %}
+        <span class="page-link active">{{ num }}</span>
+        {% elif num > manga_list.number|add:"-3" and num < manga_list.number|add:"3" %}
+        <a href="?page={{ num }}&q={{ query }}&status={{ current_status }}&type={{ current_type }}&sort={{ current_sort }}&genre={{ current_genre }}" class="page-link">{{ num }}</a>
+        {% endif %}
+      {% endfor %}
+      {% if manga_list.has_next %}
+      <a href="?page={{ manga_list.next_page_number }}&q={{ query }}&status={{ current_status }}&type={{ current_type }}&sort={{ current_sort }}&genre={{ current_genre }}" class="page-link">Next <i class="fas fa-chevron-right"></i></a>
+      {% endif %}
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <div class="empty-state">
+      <i class="fas fa-search"></i>
+      <h3>No manga found</h3>
+      <p>Try adjusting your search or filters.</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function updateGenreFilter(){
+  var checked=document.querySelectorAll('input[name="genre_cb"]:checked');
+  var slugs=Array.from(checked).map(function(c){return c.value});
+  document.getElementById('genre-hidden').value=slugs.join(',');
+  document.getElementById('browse-form').submit();
+}
+</script>
+{% endblock %}

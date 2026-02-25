@@ -1,0 +1,357 @@
+/* Google Fonts are loaded via <link> in templates. Removed incorrect @font-face declarations. */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 15px;
+  overflow: hidden;
+}
+
+.video-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+body::before {
+  content: '';
+  display: block;
+  position: fixed;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0);
+  pointer-events: none;
+}
+
+.register-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2;
+}
+
+.register-card {
+  width: 450px;
+  max-width: 90vw;
+  background: rgba(146, 146, 146, 0.281);
+  backdrop-filter: blur(20px);
+  border-radius: 2px;
+  overflow: visible;
+  box-shadow: 0 15px 35px rgba(112, 112, 112, 0.13);
+  margin: 0 auto;
+}
+
+.register-card h1 {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 30px;
+  color: #fff;
+  line-height: 1.2;
+  text-transform: uppercase;
+  text-align: center;
+  width: 100%;
+  display: block;
+  padding: 40px 30px 30px;
+  margin: 0;
+}
+
+form {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  width: 100%;
+  padding: 30px;
+  flex-direction: column;
+}
+
+.input-group {
+  position: relative;
+  width: 100%;
+  z-index: 1;
+  margin-bottom: 20px;
+  overflow: visible;
+}
+
+.input-group input {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.2;
+  color: #fff;
+  display: block;
+  width: 100%;
+  background: rgba(248, 247, 247, 0.1);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  height: 75px;
+  border-radius: 3px;
+  padding: 0 30px 0 50px;
+  border: 1px solid rgba(230, 225, 225, 0.2);
+  outline: none;
+  transition: all 0.4s ease;
+  -webkit-transition: all 0.4s ease;
+  -o-transition: all 0.4s ease;
+  -moz-transition: all 0.4s ease;
+  position: relative;
+  z-index: 10;
+  cursor: text;
+}
+
+.input-group input::placeholder {
+  color: #fff;
+  background-color: transparent;
+}
+
+.input-group input:focus {
+  border-color: #fff;
+}
+
+.input-group input:focus + .focus-input100 {
+  -webkit-animation: anim-shadow 0.5s ease-in-out forwards;
+  animation: anim-shadow 0.5s ease-in-out forwards;
+}
+
+.focus-input100 {
+  display: block;
+  position: absolute;
+  border-radius: 1px;
+  bottom: 0;
+  left: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  box-shadow: 0 0;
+  color: rgba(211, 63, 141, 0.6);
+  pointer-events: none;
+}
+
+@-webkit-keyframes anim-shadow {
+  to {
+    box-shadow: 0 0 60px 20px rgba(211, 63, 141, 0.6);
+    opacity: 0;
+  }
+}
+
+@keyframes anim-shadow {
+  to {
+    box-shadow: 0 0 60px 20px rgba(211, 63, 141, 0.6);
+    opacity: 0;
+  }
+}
+
+.input-group i {
+  font-size: 18px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50px;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  pointer-events: none;
+  transition: all 0.4s ease;
+  -webkit-transition: all 0.4s ease;
+  -o-transition: all 0.4s ease;
+  -moz-transition: all 0.4s ease;
+  z-index: 5;
+  font-family: 'Font Awesome 6 Free', 'Font Awesome 6 Brands';
+  font-weight: 900;
+  font-style: normal;
+  font-variant: normal;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1;
+}
+
+.input-group input:focus + .focus-input100 + i {
+  color: #1829bd;
+}
+
+.register-btn {
+  font-family: Raleway-Bold;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #fff;
+  text-transform: uppercase;
+  width: 100%;
+  height: 50px;
+  border-radius: 2px;
+  background: #1829bd;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 25px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  transition: all 0.4s ease;
+  -webkit-transition: all 0.4s ease;
+  -o-transition: all 0.4s ease;
+  -moz-transition: all 0.4s ease;
+}
+
+.register-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #fff;
+}
+.register-btn:focus {
+  border-color: #fff;
+}
+
+.auth-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: center;
+  font-family: Poppins-Regular;
+  font-size: 13px;
+  color: #fff;
+  padding: 0 30px 30px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  margin-top: 20px;
+  padding-top: 20px;
+}
+
+.auth-links span {
+  line-height: 1.4;
+}
+
+.auth-links a {
+  font-family: Poppins-Regular;
+  font-size: 13px;
+  color: #fff;
+  text-decoration: none;
+  transition: all 0.4s ease;
+  -webkit-transition: all 0.4s ease;
+  -o-transition: all 0.4s ease;
+  -moz-transition: all 0.4s ease;
+}
+
+.auth-links a:hover {
+  color: #1829bd;
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .register-card {
+    width: calc(100% - 30px);
+    max-width: 450px;
+    border-radius: 12px;
+  }
+
+  .register-card h1 {
+    font-size: 26px;
+    padding: 30px 20px 20px;
+  }
+
+  form {
+    padding: 20px;
+  }
+
+  .input-group {
+    margin-bottom: 15px;
+  }
+
+  .input-group input {
+    height: 70px;
+    font-size: 14px;
+    border-radius: 3px;
+    padding: 0 25px 0 45px;
+  }
+
+  .focus-input100 {
+    border-radius: 3px;
+  }
+
+  .input-group i {
+    font-size: 16px;
+    width: 45px;
+  }
+
+  .register-btn {
+    height: 45px;
+    font-size: 14px;
+    border-radius: 6px;
+    margin-top: 15px;
+  }
+
+  .auth-links {
+    padding: 0 20px 20px;
+    font-size: 12px;
+  }
+}
+
+.form-container.signup button {
+  background: #28a745;
+}
+.form-container.signup button:hover {
+  background: #218838;
+}
+
+.links {
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.links a {
+  color: #007BFF;
+  text-decoration: none;
+}
+
+.links a:hover {
+  text-decoration: underline;
+}
+
+/* Message styles centralized in staticfiles/style.css. Removed duplicates here. */
+/* Inserted message styles to ensure they are applied in development (app static is served)
+  Centered card design, icon, close button, fade animations */
+.messages { list-style: none; padding: 0; margin: 0 0 1rem 0; width: 88%; max-width: 420px; margin-left: auto; margin-right: auto; }
+.register-card .messages { margin: 18px 30px 0 30px; }
+.messages li { padding: 16px 20px; border-radius: 12px; margin-bottom: 14px; background: rgba(30,30,30,0.34); color: #fff; border: 1px solid rgba(255,255,255,0.06); box-shadow: 0 12px 36px rgba(0,0,0,0.55); text-align: left; font-size: 1rem; opacity: 0; transform: translateY(-8px); will-change: opacity, transform; z-index: 10; }
+.messages li.success { background: linear-gradient(90deg, rgba(40,167,69,0.10), rgba(25,118,210,0.03)); border-color: rgba(40,167,69,0.22); color: #e8fff0; }
+.messages li.error { background: linear-gradient(90deg, rgba(220,53,69,0.08), rgba(220,53,69,0.04)); border-color: rgba(220,53,69,0.18); color: #ffecec; }
+.messages li.info { background: linear-gradient(90deg, rgba(23,162,184,0.06), rgba(23,162,184,0.02)); border-color: rgba(23,162,184,0.12); color: #eaf9ff; }
+.messages li.warning { background: linear-gradient(90deg, rgba(255,193,7,0.06), rgba(255,193,7,0.02)); border-color: rgba(255,193,7,0.12); color: #fff8e6; }
+.messages li { animation: messages-fade-in 2s ease forwards; transition: opacity .6s ease, transform .4s ease; }
+.messages li.fade-out { opacity: 0; transform: translateY(-8px); }
+@keyframes messages-fade-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+.messages li { display: flex; align-items: center; gap: 14px; }
+.msg-icon { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; flex: 0 0 34px; font-size: 20px; opacity: 0.98; }
+.msg-text { flex: 1 1 auto; font-weight: 600; }
+.msg-close { background: transparent; border: 0; color: inherit; font-size: 22px; line-height: 1; cursor: pointer; padding: 6px 8px; border-radius: 8px; opacity: 0.95; }
+.msg-close:focus { outline: 2px solid rgba(255,255,255,0.14); }
+.msg-close:hover { background: rgba(255,255,255,0.03); }

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}My Bookmarks — MangaDox{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="wrap">
+    <h1 class="page-title"><i class="fas fa-bookmark"></i> My Bookmarks</h1>
+    {% if bookmarks %}
+    <div class="manga-grid">
+      {% for bm in bookmarks %}
+      <a href="{% url 'manga_detail' bm.manga.slug %}" class="manga-card">
+        <div class="manga-card-cover">
+          <img src="{{ bm.manga.get_cover_display }}" alt="{{ bm.manga.title }}" loading="lazy">
+          {% if bm.manga.rating > 0 %}
+          <span class="card-rating"><i class="fas fa-star"></i> {{ bm.manga.rating }}</span>
+          {% endif %}
+          <span class="card-type">{{ bm.manga.manga_type }}</span>
+        </div>
+        <div class="manga-card-info">
+          <h3 class="manga-card-title">{{ bm.manga.title }}</h3>
+          <span class="manga-card-meta">
+            {% with ch=bm.manga.get_latest_chapter %}
+            {% if ch %}Ch. {{ ch.number }}{% else %}—{% endif %}
+            {% endwith %}
+            · {{ bm.manga.status }}
+          </span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <i class="far fa-bookmark"></i>
+      <h3>No bookmarks yet</h3>
+      <p>Browse manga and bookmark your favorites to see them here.</p>
+      <a href="{% url 'manga_list' %}" class="btn btn-primary"><i class="fas fa-compass"></i> Browse Manga</a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
