@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY: Load SECRET_KEY from environment variable
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-me-in-production')
+SECRET_KEY = config('SECRET_KEY', default='153bf2bba8ba11b12e539377fb567450')
 
 # SECURITY: DEBUG should be False in production
 DEBUG = config('DEBUG', default=False, cast=bool)
@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'MangaDox.wsgi.application'
 # Supports either a full `DATABASE_URL` or individual DB_* env vars.
 # If you set `DATABASE_URL` in Render (e.g. postgres://user:pw@host:5432/dbname)
 # this will be used. Otherwise it falls back to DB_NAME/DB_USER/DB_PASSWORD.
-DATABASE_URL = config('DATABASE_URL', default=None)
+DATABASE_URL = config('postgresql://mangadox_post:rTVeSGWKzVGGuZ73AjSz37QzU7gOAaiP@dpg-d6ffe5ma2pns73diuqp0-a.oregon-postgres.render.com/mangadox_db', default=None)
 if DATABASE_URL:
     try:
         import dj_database_url
