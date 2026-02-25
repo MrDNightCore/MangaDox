@@ -165,6 +165,28 @@ STATIC_ROOT = BASE_DIR / 'collected_static'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# Optional: use S3 for media storage when `USE_S3` env var is true.
+# Set `USE_S3=True` and provide `AWS_STORAGE_BUCKET_NAME`, `AWS_ACCESS_KEY_ID`,
+# and `AWS_SECRET_ACCESS_KEY` in production (Render environment variables).
+USE_S3 = config('USE_S3', default=False, cast=bool)
+if USE_S3:
+    # Add storages to installed apps (safe even if already present)
+    INSTALLED_APPS += ['storages']
+
+    # Use django-storages S3 backend for uploaded media files
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+    AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME', default=None)
+    AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME', default=None)
+    AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID', default=None)
+    AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY', default=None)
+    AWS_S3_CUSTOM_DOMAIN = config('AWS_S3_CUSTOM_DOMAIN', default=None)
+
+    if AWS_S3_CUSTOM_DOMAIN:
+        MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
+    elif AWS_STORAGE_BUCKET_NAME:
+        MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/'
+
 # ============================================================================
 # SECURITY CONFIGURATIONS
 # ============================================================================

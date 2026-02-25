@@ -43,3 +43,9 @@ psycopg2-binary==2.9.9  # For PostgreSQL in production
 # API (if needed)
 djangorestframework==3.14.0
 django-filter==23.5
+
+# Database URL parsing helper (optional)
+dj-database-url==1.0.0
+
+# File storage for S3
+django-storages[boto3]==1.13.2
