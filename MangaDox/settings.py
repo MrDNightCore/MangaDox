@@ -29,7 +29,7 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-me-in-producti
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 # SECURITY: Explicitly set ALLOWED_HOSTS
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,https://mangadox.onrender.com', cast=Csv())
 
 
 # Application definition
@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -252,7 +253,7 @@ ADMINS = [('Admin', config('ADMIN_EMAIL', default='admin@example.com'))]
 MANAGERS = ADMINS
 
 # CSRF settings
-CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='http://localhost:8000', cast=Csv())
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='http://localhost:8000,https://mangadox.onrender.com', cast=Csv())
 CSRF_FAILURE_VIEW = 'users.views.csrf_failure'
 
 # Logging configuration for security events
@@ -294,3 +295,25 @@ LOGGING = {
 
 # Create logs directory if it doesn't exist
 os.makedirs(BASE_DIR / 'logs', exist_ok=True)
+
+# Enforce stricter security defaults in production when DEBUG is False.
+# These are conservative, environment-variable overridable defaults.
+if not DEBUG:
+    # Prefer secure-only production cookies and HTTPS redirects. You can
+    # override `SECURE_SSL_REDIRECT` with environment variable if necessary.
+    SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=True, cast=bool)
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SAMESITE = 'Strict'
+    CSRF_COOKIE_SAMESITE = 'Strict'
+
+    # HSTS
+    SECURE_HSTS_SECONDS = config('SECURE_HSTS_SECONDS', default=31536000, cast=int)
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
+    # Suggest using WhiteNoise's compressed manifest storage in production
+    # when enabled via env var. This helps with efficient static serving.
+    if config('USE_WHITENOISE_STATIC', default=True, cast=bool):
+        STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
