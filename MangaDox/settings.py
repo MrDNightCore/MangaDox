@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'MangaDox.wsgi.application'
 # Supports either a full `DATABASE_URL` or individual DB_* env vars.
 # If you set `DATABASE_URL` in Render (e.g. postgres://user:pw@host:5432/dbname)
 # this will be used. Otherwise it falls back to DB_NAME/DB_USER/DB_PASSWORD.
-DATABASE_URL = config('postgresql://mangadox_post:rTVeSGWKzVGGuZ73AjSz37QzU7gOAaiP@dpg-d6ffe5ma2pns73diuqp0-a.oregon-postgres.render.com/mangadox_db', default=None)
+DATABASE_URL = config('DATABASE_URL', default=None)
 if DATABASE_URL:
     try:
         import dj_database_url
