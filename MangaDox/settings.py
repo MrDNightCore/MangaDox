@@ -41,14 +41,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'manga.apps.MangaConfig',
     'users.apps.UsersConfig',
-    
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -330,4 +331,14 @@ if not DEBUG:
         STORAGES["staticfiles"] = {
             "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
         }
+
+# ============================================================================
+# CORS CONFIGURATION
+# ============================================================================
+CORS_ALLOWED_ORIGINS = config(
+    'CORS_ALLOWED_ORIGINS',
+    default='http://localhost:8000,https://mangadox.onrender.com',
+    cast=Csv(),
+)
+CORS_ALLOW_CREDENTIALS = True
 

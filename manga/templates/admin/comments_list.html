@@ -1,0 +1,43 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Manage Comments{% endblock %}
+{% block admin_content %}
+<h1 class="admin-page-title">Comments</h1>
+
+<form method="GET" class="admin-search">
+  <input type="text" name="q" value="{{ query }}" placeholder="Search by user, manga, or text..." class="form-input">
+  <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-search"></i></button>
+</form>
+
+<table class="admin-table">
+  <thead><tr><th>User</th><th>Manga</th><th>Comment</th><th>Date</th><th>Actions</th></tr></thead>
+  <tbody>
+    {% for c in comments %}
+    <tr>
+      <td><strong>{{ c.user.username }}</strong></td>
+      <td><a href="{% url 'manga_detail' c.manga.slug %}">{{ c.manga.title|truncatechars:30 }}</a></td>
+      <td>{{ c.text|truncatechars:80 }}</td>
+      <td>{{ c.created_at|timesince }} ago</td>
+      <td class="action-cell">
+        <form method="POST" action="{% url 'admin_comment_delete' c.id %}" style="display:inline" onsubmit="return confirm('Delete this comment?')">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-trash"></i></button>
+        </form>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5" class="text-muted" style="text-align:center">No comments found.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if comments.has_other_pages %}
+<nav class="pagination">
+  {% if comments.has_previous %}<a href="?page={{ comments.previous_page_number }}&q={{ query }}" class="page-link"><i class="fas fa-chevron-left"></i></a>{% endif %}
+  {% for num in comments.paginator.page_range %}
+    {% if comments.number == num %}<span class="page-link active">{{ num }}</span>
+    {% elif num > comments.number|add:"-3" and num < comments.number|add:"3" %}<a href="?page={{ num }}&q={{ query }}" class="page-link">{{ num }}</a>{% endif %}
+  {% endfor %}
+  {% if comments.has_next %}<a href="?page={{ comments.next_page_number }}&q={{ query }}" class="page-link"><i class="fas fa-chevron-right"></i></a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}

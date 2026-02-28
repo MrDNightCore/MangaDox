@@ -23,6 +23,9 @@
         <a href="{% url 'admin_manga_list' %}" class="{% if 'manga' in request.resolver_match.url_name and 'chapter' not in request.resolver_match.url_name %}active{% endif %}"><i class="fas fa-book"></i> Manga</a>
         <a href="{% url 'admin_genres' %}" class="{% if request.resolver_match.url_name == 'admin_genres' %}active{% endif %}"><i class="fas fa-tags"></i> Genres</a>
         <a href="{% url 'admin_users' %}" class="{% if 'user' in request.resolver_match.url_name %}active{% endif %}"><i class="fas fa-users"></i> Users</a>
+        <a href="{% url 'admin_comments' %}" class="{% if 'comment' in request.resolver_match.url_name %}active{% endif %}"><i class="fas fa-comments"></i> Comments</a>
+        <a href="{% url 'admin_bookmarks' %}" class="{% if 'bookmark' in request.resolver_match.url_name %}active{% endif %}"><i class="fas fa-bookmark"></i> Bookmarks</a>
+        <a href="{% url 'admin_ratings' %}" class="{% if 'rating' in request.resolver_match.url_name %}active{% endif %}"><i class="fas fa-star"></i> Ratings</a>
         <hr>
         <a href="{% url 'home' %}"><i class="fas fa-globe"></i> View Site</a>
       </nav>
