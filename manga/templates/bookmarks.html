@@ -10,7 +10,7 @@
       {% for bm in bookmarks %}
       <a href="{% url 'manga_detail' bm.manga.slug %}" class="manga-card">
         <div class="manga-card-cover">
-          <img src="{{ bm.manga.get_cover_display }}" alt="{{ bm.manga.title }}" loading="lazy">
+          <img src="{{ bm.manga.get_cover_display }}" alt="{{ bm.manga.title }}" loading="lazy" onerror="this.onerror=null;this.src='/static/images/default_cover.svg'">
           {% if bm.manga.rating > 0 %}
           <span class="card-rating"><i class="fas fa-star"></i> {{ bm.manga.rating }}</span>
           {% endif %}

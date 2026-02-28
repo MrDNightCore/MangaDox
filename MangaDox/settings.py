@@ -55,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'csp.middleware.CSPMiddleware',
 ]
 
 ROOT_URLCONF = 'MangaDox.urls'
@@ -76,6 +77,9 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'MangaDox.wsgi.application'
+
+# Default primary key field type
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # Database
@@ -154,7 +158,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'staticfiles',
 ]
@@ -166,16 +170,28 @@ STATIC_ROOT = BASE_DIR / 'collected_static'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# Storage backends (Django 4.2+ style — replaces deprecated DEFAULT_FILE_STORAGE
+# and STATICFILES_STORAGE settings which were removed in Django 6.0).
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
+
 # Optional: use S3 for media storage when `USE_S3` env var is true.
-# Set `USE_S3=True` and provide `AWS_STORAGE_BUCKET_NAME`, `AWS_ACCESS_KEY_ID`,
-# and `AWS_SECRET_ACCESS_KEY` in production (Render environment variables).
 USE_S3 = config('USE_S3', default=False, cast=bool)
 if USE_S3:
     # Add storages to installed apps (safe even if already present)
-    INSTALLED_APPS += ['storages']
+    if 'storages' not in INSTALLED_APPS:
+        INSTALLED_APPS += ['storages']
 
     # Use django-storages S3 backend for uploaded media files
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    STORAGES["default"] = {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+    }
 
     AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME', default=None)
     AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME', default=None)
@@ -202,7 +218,8 @@ CSRF_COOKIE_HTTPONLY = config('CSRF_COOKIE_HTTPONLY', default=True, cast=bool)
 SESSION_COOKIE_HTTPONLY = config('SESSION_COOKIE_HTTPONLY', default=True, cast=bool)
 SESSION_COOKIE_SAMESITE = 'Strict'  # Prevent CSRF via cookies
 CSRF_COOKIE_SAMESITE = 'Strict'
-SECURE_BROWSER_XSS_FILTER = True
+# Note: SECURE_BROWSER_XSS_FILTER was removed in Django 4.0+
+# Modern browsers no longer support the X-XSS-Protection header.
 
 # Session security
 SESSION_COOKIE_AGE = config('SESSION_COOKIE_AGE', default=3600, cast=int)
@@ -212,14 +229,14 @@ SESSION_SAVE_EVERY_REQUEST = True
 # X-Frame-Options (Clickjacking protection)
 X_FRAME_OPTIONS = 'DENY'
 
-# Content Security Policy header
-SECURE_CONTENT_SECURITY_POLICY = {
-    'default-src': ("'self'",),
-    'script-src': ("'self'", "https://cdnjs.cloudflare.com"),
-    'style-src': ("'self'", "https://cdnjs.cloudflare.com"),
-    'img-src': ("'self'", "data:", "https:"),
-    'font-src': ("'self'", "https://cdnjs.cloudflare.com"),
-}
+# Content Security Policy via django-csp
+# Requires 'csp.middleware.CSPMiddleware' in MIDDLEWARE to take effect.
+# Using django-csp settings format:
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_SCRIPT_SRC = ("'self'", "https://cdnjs.cloudflare.com")
+CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com")
+CSP_IMG_SRC = ("'self'", "data:", "https:")
+CSP_FONT_SRC = ("'self'", "https://cdnjs.cloudflare.com")
 
 # Additional security headers
 SECURE_HSTS_SECONDS = config('SECURE_HSTS_SECONDS', default=31536000, cast=int)  # 1 year
@@ -307,8 +324,10 @@ if not DEBUG:
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
 
-    # Suggest using WhiteNoise's compressed manifest storage in production
-    # when enabled via env var. This helps with efficient static serving.
+    # Use WhiteNoise's compressed manifest storage in production
+    # for efficient static file serving with cache busting.
     if config('USE_WHITENOISE_STATIC', default=True, cast=bool):
-        STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+        STORAGES["staticfiles"] = {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        }
 

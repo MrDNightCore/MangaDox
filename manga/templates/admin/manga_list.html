@@ -18,7 +18,7 @@
   <tbody>
     {% for m in manga_list %}
     <tr>
-      <td><img src="{{ m.get_cover_display }}" alt="" class="admin-thumb"></td>
+      <td><img src="{{ m.get_cover_display }}" alt="" class="admin-thumb" onerror="this.onerror=null;this.src='/static/images/default_cover.svg'"></td>
       <td><a href="{% url 'manga_detail' m.slug %}">{{ m.title|truncatechars:50 }}</a></td>
       <td>{{ m.manga_type }}</td>
       <td><span class="badge badge-sm">{{ m.status }}</span></td>

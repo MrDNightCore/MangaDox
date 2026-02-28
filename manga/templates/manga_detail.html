@@ -8,7 +8,7 @@
 <!-- Detail Hero -->
 <section class="detail-hero">
   <div class="wrap detail-hero-inner">
-    <img src="{{ manga.get_cover_display }}" alt="{{ manga.title }}" class="detail-cover">
+    <img src="{{ manga.get_cover_display }}" alt="{{ manga.title }}" class="detail-cover" onerror="this.onerror=null;this.src='/static/images/default_cover.svg'">
     <div class="detail-info">
       <h1>{{ manga.title }}</h1>
       {% if manga.alt_titles %}<p class="detail-alt">{{ manga.alt_titles|truncatewords:20 }}</p>{% endif %}

@@ -58,10 +58,16 @@ class Manga(models.Model):
         super().save(*args, **kwargs)
 
     def get_cover_display(self):
-        if self.cover and hasattr(self.cover, 'url'):
-            return self.cover.url
+        # Prefer external cover URL (reliable on platforms with ephemeral filesystems like Render)
         if self.cover_url:
             return self.cover_url
+        # Fall back to uploaded cover file only if the file actually exists on disk
+        if self.cover and hasattr(self.cover, 'url'):
+            try:
+                if self.cover.storage.exists(self.cover.name):
+                    return self.cover.url
+            except Exception:
+                pass
         return '/static/images/default_cover.svg'
 
     def get_chapter_count(self):
