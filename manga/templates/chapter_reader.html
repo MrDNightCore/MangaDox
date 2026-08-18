@@ -36,7 +36,7 @@
   {% if images %}
     {% for img in images %}
     <div class="reader-page">
-      <img src="{{ img.image.url }}" alt="Page {{ img.order|add:1 }}" loading="lazy">
+      <img src="{{ img.get_image_display }}" alt="Page {{ img.order|add:1 }}" loading="lazy" data-onerror-fallback="{% static 'images/default_cover.svg' %}">
     </div>
     {% endfor %}
   {% else %}

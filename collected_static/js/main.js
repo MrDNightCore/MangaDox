@@ -2,6 +2,18 @@
 (function () {
   "use strict";
 
+  // ---- HTML escaping for server-provided strings ----
+  function escapeHtml(value) {
+    return String(value == null ? "" : value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
+
+  function escapeAttr(value) {
+    return escapeHtml(value).replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+
   // ---- Mobile nav toggle ----
   var mobileBtn = document.getElementById("mobile-toggle");
   var mainNav = document.getElementById("main-nav");
@@ -116,21 +128,27 @@
               searchResults.classList.add("open");
               return;
             }
+            var fallbackCover =
+              document.body.getAttribute("data-default-cover") || "";
             var html = "";
             d.results.forEach(function (m) {
               html +=
                 '<a class="search-result-item" href="/manga/' +
-                m.slug +
+                encodeURIComponent(m.slug) +
                 '/">' +
                 '<img src="' +
-                m.cover +
-                '" alt="">' +
+                escapeAttr(m.cover) +
+                '" alt="' +
+                escapeAttr(m.title) +
+                '" data-onerror-fallback="' +
+                escapeAttr(fallbackCover) +
+                '">' +
                 "<div><h4>" +
-                m.title +
+                escapeHtml(m.title) +
                 "</h4><span>" +
-                m.manga_type +
+                escapeHtml(m.manga_type) +
                 " · Ch. " +
-                m.latest_chapter +
+                escapeHtml(m.latest_chapter) +
                 "</span></div>" +
                 "</a>";
             });

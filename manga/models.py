@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.text import slugify
 
+from .image_urls import default_cover_url, resolve_cover_url
+
 
 class Genre(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -58,9 +60,12 @@ class Manga(models.Model):
         super().save(*args, **kwargs)
 
     def get_cover_display(self):
-        # Prefer external cover URL (reliable on platforms with ephemeral filesystems like Render)
-        if self.cover_url:
-            return self.cover_url
+        # Prefer external cover URL (reliable on platforms with ephemeral
+        # filesystems like Render), but only when it points at an actual image
+        # file — page links such as Pinterest pins render as broken images.
+        external = resolve_cover_url(self.cover_url)
+        if external:
+            return external
         # Fall back to uploaded cover file only if the file actually exists on disk
         if self.cover and hasattr(self.cover, 'url'):
             try:
@@ -68,7 +73,7 @@ class Manga(models.Model):
                     return self.cover.url
             except Exception:
                 pass
-        return '/static/images/default_cover.svg'
+        return default_cover_url()
 
     def get_chapter_count(self):
         return self.chapters.count()
@@ -118,6 +123,16 @@ class ChapterImage(models.Model):
     chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to='chapter_images/')
     order = models.PositiveIntegerField(default=0)
+
+    def get_image_display(self):
+        """Page URL, or the default artwork when the upload is missing."""
+        if self.image and hasattr(self.image, 'url'):
+            try:
+                if self.image.storage.exists(self.image.name):
+                    return self.image.url
+            except Exception:
+                pass
+        return default_cover_url()
 
     class Meta:
         ordering = ['order']

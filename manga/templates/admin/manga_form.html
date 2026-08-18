@@ -50,6 +50,8 @@
     <div class="form-group">
       <label for="id_cover_url">Cover URL (external)</label>
       {{ form.cover_url }}
+      {% if form.cover_url.errors %}<span class="field-error">{{ form.cover_url.errors.0 }}</span>{% endif %}
+      <p class="text-muted">Must be a direct image link (ends in .jpg, .png, .webp). Page links such as Pinterest pins will not load.</p>
     </div>
     <div class="form-group full">
       <label>Genres</label>
