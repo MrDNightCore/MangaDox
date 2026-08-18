@@ -6,40 +6,57 @@ from django.views.decorators.csrf import csrf_protect
 from django.core.paginator import Paginator
 from django.db.models import Q, Count
 
-from .models import Manga, Genre, Chapter, ChapterImage, Bookmark, Comment
+from .models import Manga, Genre, Chapter, ChapterImage, Bookmark, Rating, Comment
 from .forms import MangaForm, ChapterForm
 from users.models import UserProfile
 
 
+def _find_profile_for_auth_user(user):
+    """Find or create a UserProfile for a Django auth user."""
+    profile = None
+    try:
+        if getattr(user, 'email', None):
+            profile = UserProfile.objects.filter(email=user.email).first()
+        if not profile and getattr(user, 'username', None):
+            profile = UserProfile.objects.filter(username=user.username).first()
+    except Exception:
+        profile = None
+
+    # Auto-create a UserProfile for superusers if none exists
+    if profile is None and getattr(user, 'is_superuser', False):
+        try:
+            profile = UserProfile.objects.create(
+                username=user.username,
+                email=user.email or '',
+                password=getattr(user, 'password', ''),
+                is_admin=True,
+                is_active=True,
+            )
+        except Exception:
+            pass
+    return profile
+
+
 def admin_required(view_func):
     """Decorator requiring admin access."""
+    from functools import wraps
+
+    @wraps(view_func)
     def wrapper(request, *args, **kwargs):
         # First, allow Django's auth users only if they're superuser
         try:
             if hasattr(request, 'user') and request.user.is_authenticated:
                 # Allow direct Django superusers
                 if getattr(request.user, 'is_superuser', False):
-                    # Try to attach a matching UserProfile if available (by email or username)
-                    profile = None
-                    try:
-                        if getattr(request.user, 'email', None):
-                            profile = UserProfile.objects.filter(email=request.user.email).first()
-                        if not profile and getattr(request.user, 'username', None):
-                            profile = UserProfile.objects.filter(username=request.user.username).first()
-                    except Exception:
-                        profile = None
+                    profile = _find_profile_for_auth_user(request.user)
+                    if profile is None:
+                        messages.error(request, 'Admin profile could not be resolved.')
+                        return redirect('home')
                     request.admin_user = profile
                     return view_func(request, *args, **kwargs)
                 # If not a superuser, check if there's a linked UserProfile marked as is_admin
                 else:
-                    profile = None
-                    try:
-                        if getattr(request.user, 'email', None):
-                            profile = UserProfile.objects.filter(email=request.user.email).first()
-                        if not profile and getattr(request.user, 'username', None):
-                            profile = UserProfile.objects.filter(username=request.user.username).first()
-                    except Exception:
-                        profile = None
+                    profile = _find_profile_for_auth_user(request.user)
                     if profile and getattr(profile, 'is_admin', False):
                         request.admin_user = profile
                         return view_func(request, *args, **kwargs)
@@ -62,8 +79,6 @@ def admin_required(view_func):
             return redirect('login_page')
         request.admin_user = user
         return view_func(request, *args, **kwargs)
-    wrapper.__name__ = view_func.__name__
-    wrapper.__doc__ = view_func.__doc__
     return wrapper
 
 
@@ -366,3 +381,162 @@ def genre_manage(request):
     genres = Genre.objects.annotate(manga_count=Count('manga_list')).order_by('name')
     context = {'genres': genres}
     return render(request, 'admin/genres.html', context)
+
+
+# ---------------------------------------------------------------------------
+# Comment management
+# ---------------------------------------------------------------------------
+@admin_required
+def comments_list_admin(request):
+    queryset = Comment.objects.select_related('user', 'manga').order_by('-created_at')
+    q = request.GET.get('q', '').strip()
+    if q:
+        queryset = queryset.filter(
+            Q(user__username__icontains=q) |
+            Q(manga__title__icontains=q) |
+            Q(text__icontains=q)
+        )
+
+    paginator = Paginator(queryset, 30)
+    page = request.GET.get('page', 1)
+    comments_page = paginator.get_page(page)
+
+    context = {'comments': comments_page, 'query': q}
+    return render(request, 'admin/comments_list.html', context)
+
+
+@admin_required
+@csrf_protect
+@require_http_methods(["POST"])
+def comment_delete(request, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+    comment.delete()
+    messages.success(request, 'Comment deleted.')
+    return redirect('admin_comments')
+
+
+# ---------------------------------------------------------------------------
+# Bookmark management
+# ---------------------------------------------------------------------------
+@admin_required
+def bookmarks_list_admin(request):
+    queryset = Bookmark.objects.select_related('user', 'manga').order_by('-created_at')
+    q = request.GET.get('q', '').strip()
+    if q:
+        queryset = queryset.filter(
+            Q(user__username__icontains=q) |
+            Q(manga__title__icontains=q)
+        )
+
+    paginator = Paginator(queryset, 30)
+    page = request.GET.get('page', 1)
+    bookmarks_page = paginator.get_page(page)
+
+    context = {'bookmarks': bookmarks_page, 'query': q}
+    return render(request, 'admin/bookmarks_list.html', context)
+
+
+@admin_required
+@csrf_protect
+@require_http_methods(["POST"])
+def bookmark_delete(request, bookmark_id):
+    bookmark = get_object_or_404(Bookmark, id=bookmark_id)
+    bookmark.delete()
+    messages.success(request, 'Bookmark removed.')
+    return redirect('admin_bookmarks')
+
+
+# ---------------------------------------------------------------------------
+# Rating management
+# ---------------------------------------------------------------------------
+@admin_required
+def ratings_list_admin(request):
+    queryset = Rating.objects.select_related('user', 'manga').order_by('-created_at')
+    q = request.GET.get('q', '').strip()
+    if q:
+        queryset = queryset.filter(
+            Q(user__username__icontains=q) |
+            Q(manga__title__icontains=q)
+        )
+
+    paginator = Paginator(queryset, 30)
+    page = request.GET.get('page', 1)
+    ratings_page = paginator.get_page(page)
+
+    context = {'ratings': ratings_page, 'query': q}
+    return render(request, 'admin/ratings_list.html', context)
+
+
+@admin_required
+@csrf_protect
+@require_http_methods(["POST"])
+def rating_delete(request, rating_id):
+    rating = get_object_or_404(Rating, id=rating_id)
+    manga = rating.manga
+    rating.delete()
+    # Recalculate manga rating
+    from django.db.models import Avg
+    avg = manga.ratings.aggregate(avg=Avg('score'))['avg'] or 0
+    count = manga.ratings.count()
+    manga.rating = round(avg, 1)
+    manga.rating_count = count
+    manga.save(update_fields=['rating', 'rating_count'])
+    messages.success(request, 'Rating deleted and manga score recalculated.')
+    return redirect('admin_ratings')
+
+
+# ---------------------------------------------------------------------------
+# User edit & delete
+# ---------------------------------------------------------------------------
+@admin_required
+@csrf_protect
+def user_edit_admin(request, user_id):
+    target_user = get_object_or_404(UserProfile, id=user_id)
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        email = request.POST.get('email', '').strip()
+        is_active = request.POST.get('is_active') == 'on'
+        is_admin = request.POST.get('is_admin') == 'on'
+
+        if not username:
+            messages.error(request, 'Username is required.')
+        elif not email:
+            messages.error(request, 'Email is required.')
+        else:
+            # Check for duplicates (exclude current user)
+            if UserProfile.objects.filter(username=username).exclude(id=user_id).exists():
+                messages.error(request, f'Username "{username}" is already taken.')
+            elif UserProfile.objects.filter(email=email).exclude(id=user_id).exists():
+                messages.error(request, f'Email "{email}" is already in use.')
+            else:
+                target_user.username = username
+                target_user.email = email
+                target_user.is_active = is_active
+                # Prevent removing own admin status
+                if target_user.id == getattr(request.admin_user, 'id', None):
+                    if not is_admin:
+                        messages.warning(request, 'You cannot remove your own admin status.')
+                    # keep is_admin unchanged for self
+                else:
+                    target_user.is_admin = is_admin
+                target_user.save()
+                messages.success(request, f'User "{target_user.username}" updated.')
+                return redirect('admin_users')
+
+    context = {'target_user': target_user}
+    return render(request, 'admin/user_edit.html', context)
+
+
+@admin_required
+@csrf_protect
+@require_http_methods(["POST"])
+def user_delete_admin(request, user_id):
+    target_user = get_object_or_404(UserProfile, id=user_id)
+    # Prevent deleting yourself
+    if target_user.id == getattr(request.admin_user, 'id', None):
+        messages.error(request, 'You cannot delete your own account.')
+        return redirect('admin_users')
+    username = target_user.username
+    target_user.delete()
+    messages.success(request, f'User "{username}" deleted permanently.')
+    return redirect('admin_users')

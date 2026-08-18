@@ -62,7 +62,7 @@ pip-delete-this-directory.txt
 
 # Django
 local_settings.py
-/staticfiles/
+/collected_static/
 /media/
 
 # Testing

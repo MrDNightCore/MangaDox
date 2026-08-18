@@ -72,7 +72,7 @@
       {% for manga in manga_list %}
       <a href="{% url 'manga_detail' manga.slug %}" class="manga-card">
         <div class="manga-card-cover">
-          <img src="{{ manga.get_cover_display }}" alt="{{ manga.title }}" loading="lazy">
+          <img src="{{ manga.get_cover_display }}" alt="{{ manga.title }}" loading="lazy" onerror="this.onerror=null;this.src='/static/images/default_cover.svg'">
           {% if manga.rating > 0 %}
           <span class="card-rating"><i class="fas fa-star"></i> {{ manga.rating }}</span>
           {% endif %}

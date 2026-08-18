@@ -47,7 +47,7 @@
       {% for manga in popular_manga %}
       <a href="{% url 'manga_detail' manga.slug %}" class="manga-card">
         <div class="manga-card-cover">
-          <img src="{{ manga.get_cover_display }}" alt="{{ manga.title }}" loading="lazy">
+          <img src="{{ manga.get_cover_display }}" alt="{{ manga.title }}" loading="lazy" onerror="this.onerror=null;this.src='/static/images/default_cover.svg'">
           {% if manga.rating > 0 %}
           <span class="card-rating"><i class="fas fa-star"></i> {{ manga.rating }}</span>
           {% endif %}
@@ -80,7 +80,7 @@
       {% for manga in new_manga %}
       <a href="{% url 'manga_detail' manga.slug %}" class="manga-card">
         <div class="manga-card-cover">
-          <img src="{{ manga.get_cover_display }}" alt="{{ manga.title }}" loading="lazy">
+          <img src="{{ manga.get_cover_display }}" alt="{{ manga.title }}" loading="lazy" onerror="this.onerror=null;this.src='/static/images/default_cover.svg'">
           {% if manga.rating > 0 %}
           <span class="card-rating"><i class="fas fa-star"></i> {{ manga.rating }}</span>
           {% endif %}
@@ -108,7 +108,7 @@
     <div class="updates-list">
       {% for ch in latest_updates %}
       <a href="{% url 'chapter_reader' ch.manga.slug ch.number %}" class="update-row">
-        <img src="{{ ch.manga.get_cover_display }}" alt="{{ ch.manga.title }}" class="update-thumb" loading="lazy">
+        <img src="{{ ch.manga.get_cover_display }}" alt="{{ ch.manga.title }}" class="update-thumb" loading="lazy" onerror="this.onerror=null;this.src='/static/images/default_cover.svg'">
         <div class="update-info">
           <h4>{{ ch.manga.title }}</h4>
           <span class="update-chapter">Chapter {{ ch.number }}{% if ch.title %} — {{ ch.title }}{% endif %}</span>

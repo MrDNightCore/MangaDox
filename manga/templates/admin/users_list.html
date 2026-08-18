@@ -20,6 +20,7 @@
       <td>{% if u.is_locked %}<i class="fas fa-lock" style="color:var(--warning)"></i>{% else %}—{% endif %}</td>
       <td>{{ u.created_at|timesince }} ago</td>
       <td class="action-cell">
+        <a href="{% url 'admin_user_edit' u.id %}" class="btn btn-sm btn-outline" title="Edit User"><i class="fas fa-edit"></i></a>
         <a href="{% url 'admin_reset_password' u.id %}" class="btn btn-sm btn-outline" title="Reset Password"><i class="fas fa-key"></i></a>
         <form method="POST" action="{% url 'admin_toggle_user_status' u.id %}" style="display:inline">
           {% csrf_token %}
@@ -32,6 +33,10 @@
           <button type="submit" class="btn btn-sm btn-outline" title="Toggle Admin">
             <i class="fas fa-shield-alt"></i>
           </button>
+        </form>
+        <form method="POST" action="{% url 'admin_user_delete' u.id %}" style="display:inline" onsubmit="return confirm('PERMANENTLY delete user &quot;{{ u.username }}&quot;? This cannot be undone.')">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-danger" title="Delete User"><i class="fas fa-trash"></i></button>
         </form>
       </td>
     </tr>

@@ -33,4 +33,20 @@ urlpatterns = [
     path('panel/users/<int:user_id>/toggle-status/', admin_views.toggle_user_status, name='admin_toggle_user_status'),
     path('panel/users/<int:user_id>/toggle-admin/', admin_views.toggle_admin_status, name='admin_toggle_admin_status'),
     path('panel/genres/', admin_views.genre_manage, name='admin_genres'),
+
+    # Admin: Comments
+    path('panel/comments/', admin_views.comments_list_admin, name='admin_comments'),
+    path('panel/comments/<int:comment_id>/delete/', admin_views.comment_delete, name='admin_comment_delete'),
+
+    # Admin: Bookmarks
+    path('panel/bookmarks/', admin_views.bookmarks_list_admin, name='admin_bookmarks'),
+    path('panel/bookmarks/<int:bookmark_id>/delete/', admin_views.bookmark_delete, name='admin_bookmark_delete'),
+
+    # Admin: Ratings
+    path('panel/ratings/', admin_views.ratings_list_admin, name='admin_ratings'),
+    path('panel/ratings/<int:rating_id>/delete/', admin_views.rating_delete, name='admin_rating_delete'),
+
+    # Admin: User edit & delete
+    path('panel/users/<int:user_id>/edit/', admin_views.user_edit_admin, name='admin_user_edit'),
+    path('panel/users/<int:user_id>/delete/', admin_views.user_delete_admin, name='admin_user_delete'),
 ]

@@ -1,0 +1,43 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Manage Ratings{% endblock %}
+{% block admin_content %}
+<h1 class="admin-page-title">Ratings</h1>
+
+<form method="GET" class="admin-search">
+  <input type="text" name="q" value="{{ query }}" placeholder="Search by user or manga..." class="form-input">
+  <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-search"></i></button>
+</form>
+
+<table class="admin-table">
+  <thead><tr><th>User</th><th>Manga</th><th>Score</th><th>Date</th><th>Actions</th></tr></thead>
+  <tbody>
+    {% for r in ratings %}
+    <tr>
+      <td><strong>{{ r.user.username }}</strong></td>
+      <td><a href="{% url 'manga_detail' r.manga.slug %}">{{ r.manga.title|truncatechars:40 }}</a></td>
+      <td><i class="fas fa-star" style="color:#fbbf24"></i> {{ r.score }}</td>
+      <td>{{ r.created_at|timesince }} ago</td>
+      <td class="action-cell">
+        <form method="POST" action="{% url 'admin_rating_delete' r.id %}" style="display:inline" onsubmit="return confirm('Delete this rating? Manga score will be recalculated.')">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-trash"></i></button>
+        </form>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5" class="text-muted" style="text-align:center">No ratings found.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if ratings.has_other_pages %}
+<nav class="pagination">
+  {% if ratings.has_previous %}<a href="?page={{ ratings.previous_page_number }}&q={{ query }}" class="page-link"><i class="fas fa-chevron-left"></i></a>{% endif %}
+  {% for num in ratings.paginator.page_range %}
+    {% if ratings.number == num %}<span class="page-link active">{{ num }}</span>
+    {% elif num > ratings.number|add:"-3" and num < ratings.number|add:"3" %}<a href="?page={{ num }}&q={{ query }}" class="page-link">{{ num }}</a>{% endif %}
+  {% endfor %}
+  {% if ratings.has_next %}<a href="?page={{ ratings.next_page_number }}&q={{ query }}" class="page-link"><i class="fas fa-chevron-right"></i></a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}
