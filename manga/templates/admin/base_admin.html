@@ -34,7 +34,7 @@
     <!-- Main -->
     <div class="admin-main">
       <header class="admin-topbar">
-        <button class="mobile-toggle" onclick="document.getElementById('admin-sidebar').classList.toggle('open')">
+        <button class="mobile-toggle admin-toggle">
           <i class="fas fa-bars"></i>
         </button>
         <span class="admin-welcome">Welcome, {{ request.session.username }}</span>
@@ -49,7 +49,7 @@
         {% for message in messages %}
         <div class="msg msg-{{ message.tags }}">
           <span class="msg-text">{{ message }}</span>
-          <button class="msg-dismiss" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+          <button class="msg-dismiss"><i class="fas fa-times"></i></button>
         </div>
         {% endfor %}
       </div>

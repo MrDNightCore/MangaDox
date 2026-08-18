@@ -88,7 +88,7 @@
         {% else %}<i class="fas fa-info-circle"></i>{% endif %}
       </span>
       <span class="msg-text">{{ message }}</span>
-      <button class="msg-dismiss" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+      <button class="msg-dismiss"><i class="fas fa-times"></i></button>
     </div>
     {% endfor %}
   </div>
@@ -143,15 +143,8 @@
 
   <script src="{% static 'js/theme_toggle.js' %}"></script>
   <script src="{% static 'js/main.js' %}"></script>
+  <script src="{% static 'js/forms-handlers.js' %}"></script>
+  <script src="{% static 'js/message-auto-dismiss.js' %}"></script>
   {% block extra_scripts %}{% endblock %}
-
-  <script>
-    // Auto-dismiss messages after 5 seconds
-    setTimeout(function(){
-      var msgs = document.getElementById('site-messages');
-      if(msgs){msgs.style.opacity='0';msgs.style.transform='translateY(-20px)';
-        setTimeout(function(){msgs.remove()},400);}
-    }, 5000);
-  </script>
 </body>
 </html>

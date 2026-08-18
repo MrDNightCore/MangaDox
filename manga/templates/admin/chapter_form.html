@@ -32,7 +32,7 @@
       <div class="preview-item" id="img-{{ img.id }}">
         <img src="{{ img.image.url }}" alt="Page {{ img.order }}">
         <span class="preview-order">{{ img.order|add:1 }}</span>
-        <button type="button" class="preview-delete" onclick="deleteImage({{ img.id }})"><i class="fas fa-times"></i></button>
+        <button type="button" class="preview-delete"><i class="fas fa-times"></i></button>
       </div>
       {% endfor %}
     </div>
@@ -45,15 +45,6 @@
   </div>
 </form>
 
-{% if is_edit %}
-<script>
-function deleteImage(id){
-  if(!confirm('Delete this page image?'))return;
-  fetch('/panel/chapter-image/'+id+'/delete/',{method:'POST',headers:{'X-CSRFToken':'{{ csrf_token }}'}})
-  .then(function(r){return r.json()}).then(function(d){
-    if(d.success)document.getElementById('img-'+id).remove();
-  });
-}
-</script>
-{% endif %}
+{% block extra_scripts %}
+<script src="{% static 'js/chapter-form.js' %}"></script>
 {% endblock %}

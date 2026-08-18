@@ -18,7 +18,7 @@
       <td>{{ c.text|truncatechars:80 }}</td>
       <td>{{ c.created_at|timesince }} ago</td>
       <td class="action-cell">
-        <form method="POST" action="{% url 'admin_comment_delete' c.id %}" style="display:inline" onsubmit="return confirm('Delete this comment?')">
+        <form method="POST" action="{% url 'admin_comment_delete' c.id %}" style="display:inline" data-confirm="Delete this comment?">
           {% csrf_token %}
           <button type="submit" class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-trash"></i></button>
         </form>

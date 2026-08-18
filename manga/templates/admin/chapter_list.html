@@ -23,7 +23,7 @@
       <td>{{ ch.created_at|timesince }} ago</td>
       <td class="action-cell">
         <a href="{% url 'admin_chapter_edit' manga.id ch.id %}" class="btn btn-sm btn-outline"><i class="fas fa-edit"></i></a>
-        <form method="POST" action="{% url 'admin_chapter_delete' manga.id ch.id %}" style="display:inline" onsubmit="return confirm('Delete chapter {{ ch.number }}?')">
+        <form method="POST" action="{% url 'admin_chapter_delete' manga.id ch.id %}" style="display:inline" data-confirm="Delete chapter {{ ch.number }}?">
           {% csrf_token %}
           <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
         </form>

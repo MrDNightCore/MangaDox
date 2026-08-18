@@ -13,7 +13,7 @@
     <span class="btn btn-sm btn-outline disabled"><i class="fas fa-chevron-left"></i> Prev</span>
     {% endif %}
 
-    <select class="form-select reader-select" id="chapter-select" onchange="window.location.href=this.value">
+    <select class="form-select reader-select" id="chapter-select">
       {% for ch in all_chapters %}
       <option value="{% url 'chapter_reader' manga.slug ch.number %}" {% if ch.number == chapter.number %}selected{% endif %}>
         Ch. {{ ch.number }}{% if ch.title %} — {{ ch.title }}{% endif %}

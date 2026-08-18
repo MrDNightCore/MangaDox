@@ -28,13 +28,13 @@
             <i class="fas {% if u.is_active %}fa-user-slash{% else %}fa-user-check{% endif %}"></i>
           </button>
         </form>
-        <form method="POST" action="{% url 'admin_toggle_admin_status' u.id %}" style="display:inline" onsubmit="return confirm('Toggle admin status for {{ u.username }}?')">
+        <form method="POST" action="{% url 'admin_toggle_admin_status' u.id %}" style="display:inline" data-confirm="Toggle admin status for {{ u.username }}?">
           {% csrf_token %}
           <button type="submit" class="btn btn-sm btn-outline" title="Toggle Admin">
             <i class="fas fa-shield-alt"></i>
           </button>
         </form>
-        <form method="POST" action="{% url 'admin_user_delete' u.id %}" style="display:inline" onsubmit="return confirm('PERMANENTLY delete user &quot;{{ u.username }}&quot;? This cannot be undone.')">
+        <form method="POST" action="{% url 'admin_user_delete' u.id %}" style="display:inline" data-confirm="PERMANENTLY delete user &quot;{{ u.username }}&quot;? This cannot be undone.">
           {% csrf_token %}
           <button type="submit" class="btn btn-sm btn-danger" title="Delete User"><i class="fas fa-trash"></i></button>
         </form>

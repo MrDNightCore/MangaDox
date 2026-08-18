@@ -20,7 +20,7 @@
         </div>
         <div class="filter-group">
           <label>Status</label>
-          <select name="status" class="form-select" onchange="this.form.submit()">
+          <select name="status" class="form-select" data-auto-submit="true">
             <option value="">Any</option>
             <option value="Ongoing" {% if current_status == 'Ongoing' %}selected{% endif %}>Ongoing</option>
             <option value="Completed" {% if current_status == 'Completed' %}selected{% endif %}>Completed</option>
@@ -29,7 +29,7 @@
         </div>
         <div class="filter-group">
           <label>Type</label>
-          <select name="type" class="form-select" onchange="this.form.submit()">
+          <select name="type" class="form-select" data-auto-submit="true">
             <option value="">Any</option>
             <option value="Manga" {% if current_type == 'Manga' %}selected{% endif %}>Manga</option>
             <option value="Manhwa" {% if current_type == 'Manhwa' %}selected{% endif %}>Manhwa</option>
@@ -38,7 +38,7 @@
         </div>
         <div class="filter-group">
           <label>Sort By</label>
-          <select name="sort" class="form-select" onchange="this.form.submit()">
+          <select name="sort" class="form-select" data-auto-submit="true">
             <option value="latest" {% if current_sort == 'latest' %}selected{% endif %}>Latest Update</option>
             <option value="new" {% if current_sort == 'new' %}selected{% endif %}>Recently Added</option>
             <option value="popular" {% if current_sort == 'popular' %}selected{% endif %}>Most Popular</option>
@@ -56,8 +56,7 @@
           {% for g in genres %}
           <label class="genre-tag {% if g.slug in current_genre %}active{% endif %}">
             <input type="checkbox" name="genre_cb" value="{{ g.slug }}"
-                   {% if g.slug in current_genre %}checked{% endif %}
-                   onchange="updateGenreFilter()"> {{ g.name }}
+                   {% if g.slug in current_genre %}checked{% endif %}> {{ g.name }}
           </label>
           {% endfor %}
         </div>
@@ -114,15 +113,4 @@
     {% endif %}
   </div>
 </section>
-{% endblock %}
-
-{% block extra_scripts %}
-<script>
-function updateGenreFilter(){
-  var checked=document.querySelectorAll('input[name="genre_cb"]:checked');
-  var slugs=Array.from(checked).map(function(c){return c.value});
-  document.getElementById('genre-hidden').value=slugs.join(',');
-  document.getElementById('browse-form').submit();
-}
-</script>
 {% endblock %}

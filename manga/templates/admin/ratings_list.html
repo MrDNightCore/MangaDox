@@ -18,7 +18,7 @@
       <td><i class="fas fa-star" style="color:#fbbf24"></i> {{ r.score }}</td>
       <td>{{ r.created_at|timesince }} ago</td>
       <td class="action-cell">
-        <form method="POST" action="{% url 'admin_rating_delete' r.id %}" style="display:inline" onsubmit="return confirm('Delete this rating? Manga score will be recalculated.')">
+        <form method="POST" action="{% url 'admin_rating_delete' r.id %}" style="display:inline" data-confirm="Delete this rating? Manga score will be recalculated.">
           {% csrf_token %}
           <button type="submit" class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-trash"></i></button>
         </form>
