@@ -15,3 +15,5 @@ until python manage.py migrate --no-input || [ $attempts -ge 5 ]; do
 done
 # Seed accounts but don't fail the build if seeding has issues
 python manage.py seed_accounts || true
+# Seed placeholder covers for testing on Render (where media files aren't persisted)
+python manage.py seed_placeholder_covers || true
