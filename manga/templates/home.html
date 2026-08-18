@@ -108,7 +108,7 @@
     <div class="updates-list">
       {% for ch in latest_updates %}
       <a href="{% url 'chapter_reader' ch.manga.slug ch.number %}" class="update-row">
-        <img src="{{ ch.manga.get_cover_display }}" alt="{{ ch.manga.title }}" class="update-thumb" loading="lazy" onerror="this.onerror=null;this.src='/static/images/default_cover.svg'">
+        <img src="{{ ch.manga.get_cover_display }}" alt="{{ ch.manga.title }}" class="update-thumb" loading="lazy" data-onerror-fallback="/static/images/default_cover.svg">
         <div class="update-info">
           <h4>{{ ch.manga.title }}</h4>
           <span class="update-chapter">Chapter {{ ch.number }}{% if ch.title %} — {{ ch.title }}{% endif %}</span>
