@@ -19,7 +19,7 @@
       <td class="text-muted">{{ g.slug }}</td>
       <td>{{ g.manga_count }}</td>
       <td>
-        <form method="POST" style="display:inline" onsubmit="return confirm('Delete genre &quot;{{ g.name }}&quot;?')">
+        <form method="POST" style="display:inline" data-confirm="Delete genre &quot;{{ g.name }}&quot;?">
           {% csrf_token %}
           <input type="hidden" name="action" value="delete">
           <input type="hidden" name="genre_id" value="{{ g.id }}">

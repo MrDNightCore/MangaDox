@@ -5,8 +5,11 @@
   var defaultNext = "/panel/";
   var adminIndex = "/admin/";
 
-  // if the server provided a next param that isn't the admin index, keep it
-  var serverNext = document.body.getAttribute("data-server-next") || "";
+  // Read serverNext from data attribute on hidden div
+  var serverNextDiv = document.querySelector("[data-server-next]");
+  var serverNext = serverNextDiv
+    ? serverNextDiv.getAttribute("data-server-next")
+    : "";
 
   if (serverNext) {
     nextInput.value = serverNext;
